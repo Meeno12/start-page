@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Start</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* 60% cold black */  --base:  #191c1f;
+    /* 30% slate      */  --slate: #2a2f36;
+                          --slate-line: #3d4248;
+    /* 10% warm orange*/  --orange: #ff7a1a;
+    --text:  #e7eaee;
+    --muted: #7b8695;
+  } 
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background:
+      linear-gradient(var(--slate-line) 1px, transparent 1px) 0 0 / 56px 56px,
+      linear-gradient(90deg, var(--slate-line) 1px, transparent 1px) 0 0 / 56px 56px,
+      var(--base);
+    background-blend-mode: soft-light, soft-light, normal;
+    color: var(--text);
+    font-family: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", sans-serif;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 48px 24px 24px;
+  }
+  main { width: 100%; max-width: 804px; display: flex; flex-direction: column; gap: 40px; }
+ 
+  /* Search */
+  .search {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    height: 64px;
+    padding: 0 20px;
+    background: var(--slate);
+    border: 1px solid var(--slate-line);
+    border-left: 4px solid var(--orange);
+    border-radius: 10px;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .search:focus-within {
+    border-color: var(--orange);
+    box-shadow: 0 0 0 4px rgba(255, 122, 26, .16);
+  }
+  .search svg { flex: none; stroke: var(--orange); }
+  .search input {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    background: none;
+    border: 0;
+    outline: none;
+    font: inherit;
+    font-size: 19px;
+    color: var(--text);
+    caret-color: var(--orange);
+  }
+  .search input::placeholder { color: var(--muted); }
+ 
+  /* Shortcuts */
+  .shortcuts {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 14px;
+  }
+  .shortcut {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 22px;
+    min-height: 104px;
+    padding: 16px;
+    background: var(--slate);
+    border: 1px solid var(--slate-line);
+    border-radius: 10px;
+    color: var(--text);
+    text-decoration: none;
+    outline: none;
+    transition: background .15s, color .15s, border-color .15s;
+  }
+  .shortcut { --logo-from: var(--orange); position: relative; overflow: hidden; justify-content: flex-end; min-height: 100px; }
+  .shortcut .logo {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 72px;
+    height: 72px;
+    background: linear-gradient(203deg, var(--logo-from) 0%, transparent 85%);
+    -webkit-mask: var(--icon) center / contain no-repeat;
+            mask: var(--icon) center / contain no-repeat;
+    transition: transform .2s;
+  }
+  /* Fallback when a shortcut has no icon: big letter with the same gradient */
+  .shortcut .logo.letter {
+    -webkit-mask: none; mask: none;
+    display: grid; place-items: center;
+    font-size: 64px; font-weight: 800; line-height: 1;
+    background: linear-gradient(135deg, var(--logo-from) 0%, transparent 85%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+  }
+  .shortcut:hover .logo { transform: scale(1.08); }
+  .shortcut .name { font-size: 14px; font-weight: 600; position: relative; }
+  .shortcut:hover,
+  .shortcut:focus-visible {
+    --logo-from: var(--base);
+    background: var(--orange);
+    border-color: var(--orange);
+    color: var(--base);
+  }
+  .shortcut:focus-visible { box-shadow: 0 0 0 3px var(--base), 0 0 0 5px var(--orange); }
+ 
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<main>
+
+  <!-- Change the search engine here -->
+  <form class="search" action="https://search.brave.com/search" method="get">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+      <circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>
+    </svg>
+    <input type="search" name="q" placeholder="Search the web" autocomplete="off" autofocus aria-label="Search">
+  </form>
+
+  <nav class="shortcuts" id="shortcuts" aria-label="Shortcuts"></nav>
+
+</main>
+
+<script>
+  // ADD A SHORTCUT: copy one line and change the name and url.
+  // The big letter is the first letter of the name. Add  mark: "YT"  to override it.
+  const shortcuts = [
+    { name: "YouTube",    icon: "./icons/brand-youtube.svg",  url: "https://www.youtube.com" },
+    { name: "Discord",    icon: "./icons/brand-discord.svg",  url: "https://discord.com/app" },
+    { name: "Claude",     icon: "./icons/claude-mono.svg",    url: "https://claude.ai" },
+    { name: "Twitter",    icon: "./icons/brand-twitter.svg",  url: "https://x.com" },
+    { name: "Spotify",    icon: "./icons/brand-spotify.svg",  url: "https://open.spotify.com" },
+    { name: "/jp/",       icon: "./icons/brand-4chan.svg",    url: "https://boards.4chan.org/jp/catalog" },
+  ];
+
+  const container = document.getElementById("shortcuts");
+  shortcuts.forEach(({ name, url, icon }) => {
+    const link = document.createElement("a");
+    link.className = "shortcut";
+    link.href = url;
+
+    const logo = document.createElement("span");
+    logo.className = "logo";
+    logo.setAttribute("aria-hidden", "true");
+    if (icon) {
+      logo.style.setProperty("--icon", `url("${icon}")`);
+    } else {
+      logo.classList.add("letter");
+      logo.textContent = name.charAt(0).toUpperCase();
+    }
+
+    const n = document.createElement("span");
+    n.className = "name";
+    n.textContent = name;
+
+    link.append(logo, n);
+    container.append(link);
+  });
+</script>
+</body>
+</html>
